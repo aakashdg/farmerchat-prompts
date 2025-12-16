@@ -287,31 +287,6 @@ See `MULTI_DOMAIN_MIGRATION.md` for complete step-by-step guide.
 
 ---
 
-## Roadmap
-
-### Version 0.3.0 (Planned - Q1 2025)
-- [ ] Claude and Llama implementations for prompt_evals domain
-- [ ] Additional evaluation metrics (hallucination detection, citation accuracy)
-- [ ] Batch processing utilities for large-scale evaluation
-- [ ] Caching layer for repeated evaluations
-- [ ] Performance optimization for evaluation pipeline
-
-### Version 0.4.0 (Planned - Q2 2025)
-- [ ] Regional language support (Hindi, Bengali, etc.)
-- [ ] New domain: Weather forecasting
-- [ ] New domain: Market analysis
-- [ ] Prompt versioning system
-- [ ] A/B testing utilities
-
-### Version 1.0.0 (Planned - Q3 2025)
-- [ ] Production-tested across 100+ use cases
-- [ ] Performance benchmarks and optimization
-- [ ] Multi-language support (5+ languages)
-- [ ] Enterprise features (audit logs, access control)
-- [ ] Complete prompt evaluation for all providers
-
----
-
 ## Links
 
 - **Repository**: https://github.com/aakashdg/farmerchat-prompts
