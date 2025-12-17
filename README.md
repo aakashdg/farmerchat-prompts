@@ -692,7 +692,7 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 
 ---
 
-#### 3. **Fact Matching** (`fact_matching`)
+#### 3. **Fact Matching** (`fact_recall`)
 
 **Purpose**: Find semantic matches between predicted facts and ground truth facts, accounting for different wording but equivalent agricultural meaning.
 
@@ -960,7 +960,7 @@ print(f"\n✓ {len(specific_facts)} specific facts retained")
 # ============================================================
 print("\nSTEP 3: Fact Matching")
 
-matcher_prompt = manager.get_prompt("openai", "fact_matching", "prompt_evals")
+matcher_prompt = manager.get_prompt("openai", "fact_recall", "prompt_evals")
 matched_facts = []
 unmatched_predicted = list(specific_facts)
 

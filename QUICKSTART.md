@@ -124,7 +124,7 @@ use_cases = [
 use_cases = [
     "specificity_evaluation",   # Classify fact specificity
     "fact_generation",          # Extract atomic facts
-    "fact_matching",            # Semantic fact matching
+    "fact_recall",            # Semantic fact recall/matching
     "contradiction_detection",  # Detect contradictions
     "relevance_evaluation"      # Evaluate fact relevance
 ]
@@ -224,7 +224,7 @@ for fact_item in facts['facts']:
 
 ```python
 # Match predicted facts with ground truth
-matcher = manager.get_prompt("openai", "fact_matching", "prompt_evals")
+matcher = manager.get_prompt("openai", "fact_recall", "prompt_evals")
 
 gold_fact = "Apply neem oil at 3ml per liter for aphid control"
 candidate_facts = [
@@ -389,7 +389,7 @@ for fact_item in facts['facts']:
 print(f"Found {len(specific_facts)} specific facts")
 
 # Step 3: Match with ground truth
-matcher = manager.get_prompt("openai", "fact_matching", "prompt_evals")
+matcher = manager.get_prompt("openai", "fact_recall", "prompt_evals")
 
 ground_truth = ["Apply neem oil at 3ml/L for aphids"]
 

@@ -153,8 +153,8 @@ def example_fact_generation():
     }, indent=2))
 
 
-def example_fact_matching():
-    """Example of semantic fact matching"""
+def example_fact_recall():
+    """Example of semantic fact recall"""
     print("\n" + "=" * 60)
     print("EXAMPLE 5: Semantic Fact Matching")
     print("=" * 60)
@@ -162,7 +162,7 @@ def example_fact_matching():
     manager = PromptManager()
     prompt = manager.get_prompt(
         provider="openai",
-        use_case="fact_matching",
+        use_case="fact_recall",
         domain="prompt_evals"
     )
     
@@ -413,7 +413,7 @@ def example_real_world_eval_pipeline():
     print(f"  Using: {specificity.metadata.use_case.value}")
     
     print("\nStep 3: Match generated facts with ground truth")
-    matcher = manager.get_prompt("openai", "fact_matching", "prompt_evals")
+    matcher = manager.get_prompt("openai", "fact_recall", "prompt_evals")
     print(f"  Using: {matcher.metadata.use_case.value}")
     
     print("\nStep 4: Check for contradictions")
@@ -464,7 +464,7 @@ if __name__ == "__main__":
     example_with_openai_crop_advisory()
     example_with_openai_prompt_evals()
     example_fact_generation()
-    example_fact_matching()
+    example_fact_recall()
     example_contradiction_detection()
     example_relevance_evaluation()
     example_with_claude()

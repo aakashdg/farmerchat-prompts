@@ -179,14 +179,14 @@ Return a JSON object with a "facts" array where each fact includes:
     }
 )
 
-# Fact Matcher (from eval.py - find_best_semantic_match)
-OPENAI_FACT_MATCHER = Prompt(
+# Fact Matcher/Recall (from eval.py - find_best_semantic_match)
+OPENAI_FACT_RECALL = Prompt(
     metadata=PromptMetadata(
         provider=Provider.OPENAI,
-        use_case=UseCase("fact_matching"),
+        use_case=UseCase("fact_recall"),
         domain=Domain.PROMPT_EVALS,
         description="Finds the best semantic match between reference facts and candidate facts based on agricultural meaning",
-        tags=["matching", "semantic-similarity", "fact-comparison", "agricultural-context"]
+        tags=["recall", "semantic-similarity", "fact-comparison", "agricultural-context"]
     ),
     system_prompt="""You are an expert agricultural fact comparison specialist. Respond ONLY with valid JSON.""",
     user_prompt_template="""You are an agricultural fact comparison expert. Compare the reference fact with the candidate facts to find the best semantic match based on agricultural meaning and context.
@@ -406,7 +406,7 @@ Produce the JSON evaluation now.""",
 OPENAI_PROMPT_EVALS_PROMPTS = [
     OPENAI_SPECIFICITY_EVALUATOR,
     OPENAI_FACT_GENERATOR,
-    OPENAI_FACT_MATCHER,
+    OPENAI_FACT_RECALL,
     OPENAI_CONTRADICTION_DETECTOR,
     OPENAI_RELEVANCE_EVALUATOR,
 ]

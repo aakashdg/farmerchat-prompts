@@ -138,7 +138,7 @@ class UseCase(str, Enum):
     # New prompt evaluation
     SPECIFICITY_EVALUATION = "specificity_evaluation"
     FACT_GENERATION = "fact_generation"
-    FACT_MATCHING = "fact_matching"
+    FACT_RECALL = "fact_recall"
     CONTRADICTION_DETECTION = "contradiction_detection"
     RELEVANCE_EVALUATION = "relevance_evaluation"
 ```

@@ -634,7 +634,7 @@ class TestPromptEvalsDomain:
         eval_use_cases = [
             "specificity_evaluation",
             "fact_generation",
-            "fact_matching",
+            "fact_recall",
             "contradiction_detection",
             "relevance_evaluation"
         ]
@@ -689,12 +689,12 @@ class TestPromptEvalsDomain:
         except ValueError:
             pytest.skip("Fact generator not yet implemented")
     
-    def test_fact_matcher_structure(self):
-        """Test fact matcher has correct structure"""
+    def test_fact_recall_structure(self):
+        """Test fact recall has correct structure"""
         try:
             prompt = self.manager.get_prompt(
                 "openai",
-                "fact_matching",
+                "fact_recall",
                 "prompt_evals"
             )
             
