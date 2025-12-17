@@ -7,11 +7,11 @@ setup(
     name="farmerchat-prompts",
     version="0.1.0",
     author="Aakash",
-    author_email="your.email@example.com",
+    author_email="aakash@digitalgreen.org",
     description="A prompt management library for AI models in agricultural applications",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/farmerchat-prompts",
+    url="https://github.com/aakashdg/farmerchat-prompts",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",

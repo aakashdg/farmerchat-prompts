@@ -858,256 +858,37 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 
 **When to Use**: At the end of the evaluation pipeline, to assess facts that didn't match ground truth but might still be valuable.
 
----
+#### 6. **fact_stitching**: Synthesize atomic facts into natural, conversational farmer-friendly responses
 
-## Application Sequence: Complete Evaluation Pipeline
-
-Here's how to use all five prompts together in a typical quality assurance workflow:
-
-### **Pipeline Flow**
-
-```
-User Query → Chatbot Response → Fact Generation → Specificity Check → 
-Fact Matching → Contradiction Detection → Relevance Evaluation → 
-Quality Report
-```
-
-### **Step-by-Step Implementation**
+**Example**
 
 ```python
-from farmerchat_prompts import PromptManager
-from openai import OpenAI
-import json
+# Synthesize structured facts into natural response
+stitching = manager.get_prompt("openai", "fact_stitching", "prompt_evals")
 
-manager = PromptManager()
-client = OpenAI(api_key="your-key")
-
-# User query
-user_query = "How to control aphids on tomatoes organically?"
-
-# Simulated chatbot response
-chatbot_response = """
-For organic aphid control on tomatoes, apply neem oil spray at 3ml per liter. 
-Spray in early morning for best results. Repeat every 7 days during flowering.
-Also introduce ladybugs as natural predators. Water plants regularly and 
-ensure good air circulation.
-"""
-
-# Ground truth facts (from your knowledge base)
-ground_truth = [
-    "Apply neem oil at 3ml per liter for aphid control",
-    "Introduce ladybugs as natural predators for aphids"
+facts = [
+    {
+        "fact": "Apply neem oil at 3ml per liter for aphid control",
+        "category": "pest_disease",
+        "confidence": 0.9,
+        "bihar_relevance": "high"
+    },
+    {
+        "fact": "Spray in early morning for best effectiveness",
+        "category": "pest_disease",
+        "confidence": 0.85,
+        "bihar_relevance": "high"
+    }
 ]
 
-# ============================================================
-# STEP 1: Extract Facts from Chatbot Response
-# ============================================================
-print("STEP 1: Fact Generation")
-
-fact_gen_prompt = manager.get_prompt("openai", "fact_generation", "prompt_evals")
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[
-        {"role": "system", "content": fact_gen_prompt.system_prompt},
-        {"role": "user", "content": fact_gen_prompt.user_prompt_template.format(
-            chatbot_response=chatbot_response,
-            user_query=user_query,
-            regional_context="Bihar farming",
-            additional_params=""
-        )}
-    ],
-    temperature=0.0,
-    response_format={"type": "json_object"}
+formatted = stitching.user_prompt_template.format(
+    original_query="How to control aphids organically?",
+    facts_json=json.dumps(facts),
+    additional_context=""
 )
 
-extracted_facts = json.loads(response.choices[0].message.content)['facts']
-print(f"✓ Extracted {len(extracted_facts)} facts")
-
-# ============================================================
-# STEP 2: Evaluate Specificity of Each Fact
-# ============================================================
-print("\nSTEP 2: Specificity Evaluation")
-
-specificity_prompt = manager.get_prompt("openai", "specificity_evaluation", "prompt_evals")
-specific_facts = []
-
-for fact_item in extracted_facts:
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": specificity_prompt.system_prompt},
-            {"role": "user", "content": specificity_prompt.user_prompt_template.format(
-                fact_text=fact_item['fact'],
-                query_context=user_query,
-                additional_params=""
-            )}
-        ],
-        temperature=0.0,
-        response_format={"type": "json_object"}
-    )
-    
-    result = json.loads(response.choices[0].message.content)
-    if result['label'] == 'Specific':
-        specific_facts.append(fact_item['fact'])
-        print(f"  ✓ Specific: {fact_item['fact'][:60]}...")
-    else:
-        print(f"  ✗ Not Specific: {fact_item['fact'][:60]}...")
-
-print(f"\n✓ {len(specific_facts)} specific facts retained")
-
-# ============================================================
-# STEP 3: Match Specific Facts with Ground Truth
-# ============================================================
-print("\nSTEP 3: Fact Matching")
-
-matcher_prompt = manager.get_prompt("openai", "fact_recall", "prompt_evals")
-matched_facts = []
-unmatched_predicted = list(specific_facts)
-
-for gt_fact in ground_truth:
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": matcher_prompt.system_prompt},
-            {"role": "user", "content": matcher_prompt.user_prompt_template.format(
-                category="pest_disease",
-                gold_fact=gt_fact,
-                pred_facts=json.dumps(specific_facts)
-            )}
-        ],
-        temperature=0.0,
-        response_format={"type": "json_object"}
-    )
-    
-    match = json.loads(response.choices[0].message.content)
-    if match['best_match'] and match['confidence'] >= 0.7:
-        matched_facts.append(match['best_match'])
-        if match['best_match'] in unmatched_predicted:
-            unmatched_predicted.remove(match['best_match'])
-        print(f"  ✓ Matched: {gt_fact[:60]}...")
-    else:
-        print(f"  ✗ No match: {gt_fact[:60]}...")
-
-print(f"\n✓ Matched: {len(matched_facts)}/{len(ground_truth)} ground truth facts")
-
-# ============================================================
-# STEP 4: Check for Contradictions in Unmatched Facts
-# ============================================================
-print("\nSTEP 4: Contradiction Detection")
-
-if unmatched_predicted:
-    contradiction_prompt = manager.get_prompt("openai", "contradiction_detection", "prompt_evals")
-    
-    for gt_fact in ground_truth:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": contradiction_prompt.system_prompt},
-                {"role": "user", "content": contradiction_prompt.user_prompt_template.format(
-                    category="pest_disease",
-                    gold_fact=gt_fact,
-                    pred_facts=json.dumps(unmatched_predicted),
-                    additional_context=""
-                )}
-            ],
-            temperature=0.0,
-            response_format={"type": "json_object"}
-        )
-        
-        contradictions = json.loads(response.choices[0].message.content)['contradictions']
-        if contradictions:
-            for contra in contradictions:
-                print(f"  ⚠ Contradiction: {contra['contradicting_fact'][:60]}...")
-                if contra['contradicting_fact'] in unmatched_predicted:
-                    unmatched_predicted.remove(contra['contradicting_fact'])
-        
-    print(f"\n✓ {len(contradictions)} contradictions found and removed")
-else:
-    print("  (No unmatched facts to check)")
-
-# ============================================================
-# STEP 5: Evaluate Relevance of Remaining Unmatched Facts
-# ============================================================
-print("\nSTEP 5: Relevance Evaluation")
-
-if unmatched_predicted:
-    relevance_prompt = manager.get_prompt("openai", "relevance_evaluation", "prompt_evals")
-    
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": relevance_prompt.system_prompt},
-            {"role": "user", "content": relevance_prompt.user_prompt_template.format(
-                question=user_query,
-                ground_facts=json.dumps(ground_truth),
-                unmatched_facts=json.dumps(unmatched_predicted),
-                additional_evaluation_criteria="Focus on organic pest control"
-            )}
-        ],
-        temperature=0.0,
-        max_tokens=3000,
-        response_format={"type": "json_object"}
-    )
-    
-    relevance_result = json.loads(response.choices[0].message.content)
-    
-    relevant_additional = [
-        a for a in relevance_result['predicted_facts_analysis'] 
-        if a['overall_score'] >= 6
-    ]
-    
-    print(f"✓ {len(relevant_additional)} relevant additional facts found")
-    for fact in relevant_additional:
-        print(f"  + {fact['predicted_fact'][:60]}... [Score: {fact['overall_score']}/10]")
-else:
-    print("  (No unmatched facts to evaluate)")
-    relevant_additional = []
-
-# ============================================================
-# STEP 6: Generate Quality Report
-# ============================================================
-print("\n" + "="*60)
-print("QUALITY REPORT")
-print("="*60)
-
-print(f"\nTotal extracted facts: {len(extracted_facts)}")
-print(f"Specific facts: {len(specific_facts)}")
-print(f"Matched with ground truth: {len(matched_facts)}/{len(ground_truth)}")
-print(f"Contradictions detected: {len(contradictions) if 'contradictions' in locals() else 0}")
-print(f"Relevant additional facts: {len(relevant_additional)}")
-
-# Calculate metrics
-precision = len(matched_facts) / len(specific_facts) if specific_facts else 0
-recall = len(matched_facts) / len(ground_truth) if ground_truth else 0
-f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
-
-print(f"\nMetrics:")
-print(f"  Precision: {precision:.2%}")
-print(f"  Recall: {recall:.2%}")
-print(f"  F1 Score: {f1:.2%}")
-print(f"  Specificity Rate: {len(specific_facts)/len(extracted_facts):.2%}")
-
-print(f"\n✓ Evaluation pipeline complete!")
+# Returns natural, conversational synthesis of facts
 ```
-
-### **Expected Timeline**
-
-- **Fact Generation**: ~2-5 seconds
-- **Specificity Check**: ~1-2 seconds per fact
-- **Matching**: ~2-3 seconds per ground truth fact
-- **Contradiction Detection**: ~3-5 seconds per check
-- **Relevance Evaluation**: ~5-10 seconds (batch processing)
-
-**Total**: ~30-60 seconds for a typical response with 5-10 facts
-
-### **Use Cases for the Pipeline**
-
-1. **Quality Assurance**: Run on chatbot responses before showing to users
-2. **Model Evaluation**: Assess fine-tuned model performance against ground truth
-3. **Knowledge Base Curation**: Filter and validate facts for storage
-4. **A/B Testing**: Compare response quality across different models
-5. **Continuous Monitoring**: Track quality metrics over time
-
 ---
 
 ## Advanced Usage
@@ -1221,10 +1002,10 @@ flake8 farmerchat_prompts/
 
 ## Package Statistics
 
-- **Total Prompts**: 20 (15 crop advisory + 5 prompt evals for OpenAI)
+- **Total Prompts**: 22 (15 crop advisory + 7 prompt evals for OpenAI)
 - **Providers**: 3 (OpenAI, Claude, Llama)
 - **Domains**: 2 (crop_advisory, prompt_evals)
-- **Use Cases**: 10 (5 per domain)
+- **Use Cases**: 12: 5 (crop_advisory) + 7 (prompt_evals)
 - **Code Lines**: 3,500+
 - **Test Coverage**: 33+ test cases
 

@@ -126,7 +126,9 @@ use_cases = [
     "fact_generation",          # Extract atomic facts
     "fact_recall",            # Semantic fact recall/matching
     "contradiction_detection",  # Detect contradictions
-    "relevance_evaluation"      # Evaluate fact relevance
+    "relevance_evaluation",      # Evaluate fact relevance
+    "fact_stitching",            # Synthesize facts into natural responses
+    "conversationality_eval_for_stitching", # Create stitched facts into conversational response
 ]
 ```
 
@@ -252,6 +254,27 @@ match_result = json.loads(response.choices[0].message.content)
 print(f"Best match: {match_result['best_match']}")
 print(f"Confidence: {match_result['confidence']}")
 print(f"Reason: {match_result['reason']}")
+```
+
+### Workflow 4: Complete Fact Processing Pipeline
+```python
+# Step 1: Generate facts
+fact_gen = manager.get_prompt("openai", "fact_generation", "prompt_evals")
+
+# Step 2: Evaluate specificity
+specificity = manager.get_prompt("openai", "specificity_evaluation", "prompt_evals")
+
+# Step 3: Match with ground truth
+matcher = manager.get_prompt("openai", "fact_matching", "prompt_evals")
+
+# Step 4: Synthesize into natural response
+stitching = manager.get_prompt("openai", "fact_stitching", "prompt_evals")
+
+formatted = stitching.user_prompt_template.format(
+    original_query="How to control aphids?",
+    facts_json=json.dumps(verified_facts),
+    additional_context=""
+)
 ```
 
 ## Exploring Prompts

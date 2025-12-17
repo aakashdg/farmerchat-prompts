@@ -263,6 +263,60 @@ def example_relevance_evaluation():
     print("- 'Sunlight requirement' - Low relevance (2-3/10)")
     print("- 'Ladybugs as predators' - High relevance (8-9/10)")
 
+def example_fact_stitching():
+    """Example of synthesizing facts into natural responses"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 14: Fact Stitching (Synthesis)")
+    print("=" * 60)
+    
+    manager = PromptManager()
+    prompt = manager.get_prompt("openai", "fact_stitching", "prompt_evals")
+    
+    # Structured facts from previous extraction
+    facts = [
+        {
+            "fact": "Apply neem oil at 3ml per liter concentration for aphid control",
+            "category": "pest_disease",
+            "confidence": 0.9,
+            "bihar_relevance": "high"
+        },
+        {
+            "fact": "Spray neem oil in early morning for best effectiveness",
+            "category": "pest_disease",
+            "confidence": 0.85,
+            "bihar_relevance": "high"
+        },
+        {
+            "fact": "Repeat application every 7 days during flowering stage",
+            "category": "pest_disease",
+            "confidence": 0.9,
+            "bihar_relevance": "high"
+        },
+        {
+            "fact": "Introduce ladybugs as natural predators for aphids",
+            "category": "pest_disease",
+            "confidence": 0.85,
+            "bihar_relevance": "medium"
+        }
+    ]
+    
+    formatted = prompt.user_prompt_template.format(
+        original_query="How can I control aphids on my tomato plants organically?",
+        facts_json=json.dumps(facts, indent=2),
+        additional_context="Focus on practical, actionable advice"
+    )
+    
+    print(f"Original query: How can I control aphids on my tomato plants organically?")
+    print(f"Facts to synthesize: {len(facts)}")
+    print("\nExpected output: Natural, conversational response that:")
+    print("  - Addresses the query directly")
+    print("  - Weaves facts into cohesive paragraphs")
+    print("  - Maintains technical accuracy")
+    print("  - Uses farmer-friendly language")
+    print("  - Includes practical implementation steps")
+
+
+
 
 def example_with_claude():
     """Example with Claude API"""
@@ -456,6 +510,7 @@ def example_cross_domain_usage():
     print(f"   Domain: {specificity.metadata.domain.value}")
     
     print("\n✓ Cross-domain workflow: crop_advisory → prompt_evals")
+    
 
 
 if __name__ == "__main__":
@@ -473,6 +528,7 @@ if __name__ == "__main__":
     example_backward_compatibility()
     example_real_world_eval_pipeline()
     example_cross_domain_usage()
+    example_fact_stitching()
     
     print("\n" + "=" * 60)
     print("All examples completed!")
