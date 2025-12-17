@@ -510,7 +510,7 @@ Now synthesize the provided facts into a natural, expert response to the farmer'
 OPENAI_CONVERSATIONALITY_EVAL_FOR_STITCHING = Prompt(
     metadata=PromptMetadata(
         provider=Provider.OPENAI,
-        use_case=UseCase.CONVERSATIONALITY_EVALUATION,
+        use_case=UseCase.CONVERSATIONALITY_EVAL_FOR_STITCHING,
         domain=Domain.PROMPT_EVALS,
         description="Evaluates synthesized agricultural responses against Farmer.CHAT guidelines for conversationality, practicality, and farmer-friendliness",
         tags=["evaluation", "conversationality", "farmer-chat", "response-quality", "guidelines-compliance"]
