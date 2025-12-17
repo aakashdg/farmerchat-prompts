@@ -320,6 +320,12 @@ class PromptManager:
             self._register_prompts(CROP_LLAMA)
         except ImportError:
             pass
+
+        # try:
+        #     from .prompts.crop_advisory.gemma import GEMMA_PROMPTS as CROP_GEMMA
+        #     self._register_prompts(CROP_GEMMA)
+        # except ImportError:
+        #     pass
         
         # Load Prompt Evals prompts
         try:
@@ -342,6 +348,13 @@ class PromptManager:
         except ImportError:
             pass
     
+        try:
+            from .prompts.prompt_evals.gemma import GEMMA_PROMPT_EVALS_PROMPTS
+            if GEMMA_PROMPT_EVALS_PROMPTS:  # Check if not empty
+                self._register_prompts(GEMMA_PROMPT_EVALS_PROMPTS)
+        except ImportError:
+            pass
+
     def _register_prompts(self, prompts: List[Prompt]):
         """Register a list of prompts into the internal structure"""
         for prompt in prompts:

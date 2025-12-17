@@ -513,7 +513,7 @@ A Python library for managing AI prompts across multiple providers (OpenAI, Clau
 
 ## Features
 
-- 🤖 **Multi-Provider Support**: OpenAI GPT, Anthropic Claude, and Meta Llama
+- 🤖 **Multi-Provider Support**: OpenAI GPT, Google Gemma, Anthropic Claude, Meta Llama
 - 🌾 **Multi-Domain Architecture**: Organized by use case domains
   - **Crop Advisory**: Agricultural guidance and farming practices
   - **Prompt Evaluation**: Fact extraction, validation, and quality assessment
@@ -531,7 +531,7 @@ pip install farmerchat-prompts
 Or install from GitHub:
 
 ```bash
-pip install git+https://github.com/YOUR_USERNAME/farmerchat-prompts.git
+pip install git+https://github.com/aakashdg/farmerchat-prompts.git
 ```
 
 ## Quick Start
@@ -580,9 +580,10 @@ eval_prompt = manager.get_prompt(
 
 ## Supported Providers
 
-- **OpenAI** (`openai`): GPT-3.5, GPT-4
+- **OpenAI** (`openai`): GPT-3.5, GPT-4, GPT-4o, GPT-4o mini
 - **Anthropic** (`claude`): Claude 3.5 Sonnet, Claude 3 Opus
 - **Meta** (`llama`): Llama 3.1, Llama 3.2
+- **Gemma** (`gemma`): Gemma-3n-E4B-it, Gemma 2, Gemma 7B/2B (Instruction Tuned)
 
 ## Domains & Use Cases
 
@@ -858,37 +859,88 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 
 **When to Use**: At the end of the evaluation pipeline, to assess facts that didn't match ground truth but might still be valuable.
 
-#### 6. **fact_stitching**: Synthesize atomic facts into natural, conversational farmer-friendly responses
+Here is the `fact_stitching` section formatted exactly like the other use cases in the documentation (matching `relevance_evaluation`, `contradiction_detection`, etc.).
 
-**Example**
+#### 6. **Fact Stitching** (`fact_stitching`)
+
+**Purpose**: Synthesize structured atomic facts into natural, conversational, and empathetic responses suitable for farmers.
+
+**Why It Matters**: Raw data and atomic facts can feel robotic and disconnected. Farmers trust advice that sounds like it comes from an expert who understands their context. This prompt turns dry data into a "human" conversation, adding necessary transitions, cultural tone, and educational context without hallucinating new information.
+
+**Expected Input**:
 
 ```python
-# Synthesize structured facts into natural response
-stitching = manager.get_prompt("openai", "fact_stitching", "prompt_evals")
+{
+    "original_query": "How to control aphids organically?",
+    "facts_json": [
+        {
+            "fact": "Apply neem oil at 3ml per liter for aphid control",
+            "category": "pest_disease",
+            "confidence": 0.9,
+            "bihar_relevance": "high"
+        },
+        {
+            "fact": "Spray in early morning for best effectiveness",
+            "category": "pest_disease",
+            "confidence": 0.85,
+            "bihar_relevance": "high"
+        }
+    ],
+    "additional_context": "Tone should be encouraging and focus on Bihar context."
+}
 
-facts = [
-    {
-        "fact": "Apply neem oil at 3ml per liter for aphid control",
-        "category": "pest_disease",
-        "confidence": 0.9,
-        "bihar_relevance": "high"
-    },
-    {
-        "fact": "Spray in early morning for best effectiveness",
-        "category": "pest_disease",
-        "confidence": 0.85,
-        "bihar_relevance": "high"
-    }
-]
-
-formatted = stitching.user_prompt_template.format(
-    original_query="How to control aphids organically?",
-    facts_json=json.dumps(facts),
-    additional_context=""
-)
-
-# Returns natural, conversational synthesis of facts
 ```
+
+**Expected Output** (Text Response):
+
+```text
+"To control aphids organically, I recommend using Neem oil, which is a very effective natural solution. You should mix neem oil at a concentration of 3ml per liter of water.
+
+For the best results, please spray this mixture in the early morning. This helps ensure the solution stays on the plants longer and works better against the pests. This is a widely accepted practice for farmers in Bihar to protect their crops safely."
+
+```
+
+**When to Use**: The final step of a RAG pipeline, after retrieving and verifying facts, just before sending the answer to the user.
+
+#### 7. Conversationality Evaluation (conversationality_eval_for_stitching)
+**Purpose**: Evaluate synthesized agricultural responses against Farmer.CHAT guidelines for conversationality, practicality, and farmer-friendliness.
+
+**Why It Matters:** Even factually correct answers can be bad if they are robotic, condescending, or culturally inappropriate. This prompt acts as a "Quality Assurance" agent, scoring the response on:
+
+- Content Quality: Is it actionable?
+
+- Communication Style: Is it warm and professional?
+
+- Practical Advice: Is it low-cost and accessible?
+
+- Safety & Credibility: Are chemical precautions included?
+
+- Conversation Flow: Does it feel natural?
+
+- Response Format: Is it structured well?
+
+**Expected Input**:
+```python
+{
+    "question": "How do I use neem oil?",
+    "response": "To use neem oil, mix 5ml per liter...",
+    "chat_history": "[Previous turn...]",
+    "additional_context": "Farmer is from Bihar"
+}
+```
+
+**Expected Output**:
+```python
+{
+   "content_quality": { "score": 5, "justification": "...", "examples": [...] },
+   "communication_style": { "score": 4, "justification": "...", "examples": [...] },
+   "overall_score": 4.5,
+   "overall_assessment": "Excellent practical advice with a warm tone."
+}
+```
+
+**When to Use**: As a final check on stitched responses before sending them to the user, or for offline quality benchmarking.
+
 ---
 
 ## Advanced Usage
@@ -974,15 +1026,20 @@ Each provider has specific optimizations:
 ### Llama Prompts
 - **Style**: Direct instructions, example-driven learning
 - **Length**: 300-800 words with extensive examples
-- **Format**: ALL CAPS headers (ROLE, INSTRUCTIONS, EXAMPLES)
+- **Format**: `[INST]`, `<<SYS>>` formatting
 - **Best for**: Local deployment, cost-effective, privacy-focused
+
+### Gemma Prompts
+- **Style**: Instruction-tuned, compact
+- **Format**: Uses `<start_of_turn>` and `<end_of_turn>` special tokens. System instructions are merged into the first user turn.
+- **Best for**: Efficient local inference, Google Cloud Vertex AI
 
 ## Development
 
 ### Setup
 
 ```bash
-git clone https://github.com/yourusername/farmerchat-prompts
+git clone https://github.com/aakashdg/farmerchat-prompts
 cd farmerchat-prompts
 pip install -e ".[dev]"
 ```
@@ -1002,10 +1059,10 @@ flake8 farmerchat_prompts/
 
 ## Package Statistics
 
-- **Total Prompts**: 22 (15 crop advisory + 7 prompt evals for OpenAI)
-- **Providers**: 3 (OpenAI, Claude, Llama)
+- **Total Prompts**: 29 (15 crop advisory + 14 prompt evals across Providers)
+- **Providers**: 4 (OpenAI, Claude, Llama, Gemma)
 - **Domains**: 2 (crop_advisory, prompt_evals)
-- **Use Cases**: 12: 5 (crop_advisory) + 7 (prompt_evals)
+- **Use Cases**: 12 (5 crop advisory + 7 prompt evals)
 - **Code Lines**: 3,500+
 - **Test Coverage**: 33+ test cases
 
@@ -1021,9 +1078,10 @@ farmerchat_prompts/
     │   ├── claude.py   # 5 prompts
     │   └── llama.py    # 5 prompts
     └── prompt_evals/   # Evaluation & extraction prompts
-        ├── openai.py   # 5 prompts (complete)
+        ├── openai.py   # 7 prompts (complete)
         ├── claude.py   # Placeholder
         └── llama.py    # Placeholder
+        └── gemma.py    # 7 prompts
 ```
 
 ## Backward Compatibility
@@ -1060,11 +1118,8 @@ Contributions are welcome! Please:
 
 - **Documentation**: Full docs in this README
 - **Examples**: See `examples/usage_examples.py`
-- **Migration Guide**: See `MULTI_DOMAIN_MIGRATION.md`
-- **Colab Testing**: See `COLAB_TESTING_GUIDE.md`
-- **GitHub Publishing**: See `GITHUB_PUBLISHING_GUIDE.md`
 - **Issues**: GitHub Issues
-- **Email**: your.email@example.com
+- **Email**: aakash@digitalgreen.org
 
 ## License
 
@@ -1076,7 +1131,7 @@ If you use this package in your research or production system, please cite:
 
 ```bibtex
 @software{farmerchat_prompts,
-  author = {Aakash},
+  author = {aakash@digitalgreen.org},
   title = {FarmerChat Prompts: Multi-Domain AI Prompt Management for Agriculture},
   year = {2024},
   url = {https://github.com/aakashdg/farmerchat-prompts}
@@ -1087,7 +1142,7 @@ If you use this package in your research or production system, please cite:
 
 - Built for Farmer.Chat agricultural AI platform
 - Optimized for Indian farming contexts
-- Follows prompt engineering best practices from OpenAI, Anthropic, and Meta
+- Follows prompt engineering best practices from OpenAI, Google Anthropic, and Meta
 - Includes comprehensive prompt evaluation framework for quality assessment
 
 ---

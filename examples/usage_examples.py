@@ -511,6 +511,66 @@ def example_cross_domain_usage():
     
     print("\n✓ Cross-domain workflow: crop_advisory → prompt_evals")
     
+def example_conversationality_eval():
+    """Example of evaluating conversational quality"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 15: Conversationality Evaluation")
+    print("=" * 60)
+    
+    manager = PromptManager()
+    prompt = manager.get_prompt(
+        provider="openai", 
+        use_case="conversationality_eval_for_stitching", 
+        domain="prompt_evals"
+    )
+    
+    stitched_response = """
+    To control aphids, apply neem oil at 3ml per liter. 
+    Do this in the early morning for best results. 
+    It is important to repeat this every 7 days.
+    """
+    
+    formatted = prompt.user_prompt_template.format(
+        question="How to control aphids?",
+        response=stitched_response,
+        chat_history="User asked about tomatoes previously.",
+        additional_context="Farmer is from Bihar."
+    )
+    
+    print(f"Evaluating stitched response quality...")
+    print(f"Response length: {len(stitched_response)} chars")
+    print(f"Use Case: {prompt.metadata.use_case.value}")
+    print("Expected Output: JSON score object for 'content_quality', 'communication_style', etc.")
+
+
+def example_with_gemma():
+    """Example using the Gemma provider"""
+    print("\n" + "=" * 60)
+    print("EXAMPLE 16: Using with Gemma")
+    print("=" * 60)
+    
+    manager = PromptManager()
+    
+    # Get a Gemma prompt from prompt_evals
+    try:
+        prompt = manager.get_prompt("gemma", "fact_generation", "prompt_evals")
+        
+        user_input = "Extract facts from: Apply 3ml neem oil per liter."
+        
+        # Get full prompt with Gemma tokens
+        full_prompt = prompt.get_full_prompt(user_input)
+        
+        print(f"Provider: {prompt.metadata.provider.value}")
+        print("Ready for Gemma Inference:")
+        
+        # Displaying how the prompt is formatted for Gemma
+        # Note: It should contain <start_of_turn> tags
+        print(f"Prompt starts with: {full_prompt['prompt'][:100]}...")
+        if "<start_of_turn>user" in full_prompt['prompt']:
+            print("✓ Correctly formatted with <start_of_turn>user tags")
+        
+    except ValueError:
+        print("Gemma prompts not yet loaded or implemented in this environment.")
 
 
 if __name__ == "__main__":
@@ -529,6 +589,8 @@ if __name__ == "__main__":
     example_real_world_eval_pipeline()
     example_cross_domain_usage()
     example_fact_stitching()
+    example_conversationality_eval()
+    example_with_gemma()
     
     print("\n" + "=" * 60)
     print("All examples completed!")

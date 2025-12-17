@@ -13,6 +13,7 @@ class Provider(str, Enum):
     OPENAI = "openai"
     CLAUDE = "claude"
     LLAMA = "llama"
+    GEMMA = "gemma"
 
 
 class Domain(str, Enum):
@@ -86,8 +87,23 @@ class Prompt(BaseModel):
             }
         elif self.metadata.provider == Provider.LLAMA:
             return {
-                "prompt": f"{self.system_prompt}\n\nUser: {user_input}\n\nAssistant:"
+                "prompt": f"[INST] <<SYS>>\n{self.system_prompt}\n<</SYS>>\n\n{user_input} [/INST]"
             }
+        
+        elif self.metadata.provider == Provider.GEMMA:
+            # Gemma IT (Instruction Tuned) format
+            # Gemma does not have a distinct "system" role token.
+            # Best practice: Prepend system instructions to the first user turn.
+            return {
+                "prompt": (
+                    f"<start_of_turn>user\n"
+                    f"{self.system_prompt}\n\n"  # System prompt injected here
+                    f"{user_input}<end_of_turn>\n"
+                    f"<start_of_turn>model\n"
+                )
+            }
+        
+        return {} # Fallback
         
     def __str__(self) -> str:
         return f"Prompt({self.metadata.provider.value}, {self.metadata.use_case.value})"
