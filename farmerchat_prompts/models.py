@@ -33,6 +33,7 @@ class UseCase(str, Enum):
     FACT_RECALL = "fact_recall"
     CONTRADICTION_DETECTION = "contradiction_detection"
     RELEVANCE_EVALUATION = "relevance_evaluation"
+    FACT_STITCHING = "fact_stitching"
 
 
 class PromptMetadata(BaseModel):
