@@ -64,7 +64,7 @@ full_prompt = prompt.get_full_prompt(
     "My tomato plants have yellow spots. Help me identify the problem."
 )
 
-response = client.messages.create(
+response = client.chat.completions.create(
     model="gpt-4o",
     system=full_prompt["system"],
     messages=full_prompt["messages"],

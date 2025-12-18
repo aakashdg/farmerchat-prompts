@@ -5,8 +5,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="farmerchat-prompts",
-    version="0.1.0",
-    author="Aakash",
+    version="0.1.1",
+    author="Aakash Singh",
     author_email="aakash@digitalgreen.org",
     description="A prompt management library for AI models in agricultural applications",
     long_description=long_description,
