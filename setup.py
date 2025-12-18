@@ -11,7 +11,7 @@ setup(
     description="A prompt management library for AI models in agricultural applications",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/aakashdg/farmerchat-prompts",
+    url="https://github.com/digitalgreenorg/farmerchat-prompts",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",

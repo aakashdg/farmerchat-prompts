@@ -242,9 +242,9 @@ See `MULTI_DOMAIN_MIGRATION.md` for complete step-by-step guide.
 
 ## Links
 
-- **Repository**: https://github.com/aakashdg/farmerchat-prompts
+- **Repository**: https://github.com/digitalgreenorg/farmerchat-prompts
 - **Documentation**: See README.md
-- **Issues**: https://github.com/aakashdg/farmerchat-prompts/issues
+- **Issues**: https://github.com/digitalgreenorg/farmerchat-prompts/issues
 - **PyPI**: (Coming soon)
 
 ---
