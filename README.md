@@ -136,14 +136,13 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 
 #### 2. **Fact Generation** (`fact_generation`)
 
-**Purpose**: Extract atomic, verifiable facts from conversational chatbot responses, filtering out greetings, disclaimers, and non-agricultural content.
+**Purpose**: Extract atomic, verifiable facts from user query, filtering out greetings, disclaimers, and non-agricultural content.
 
-**Why It Matters**: Chatbot responses often contain multiple claims mixed with conversational elements. This prompt isolates actionable agricultural knowledge, making it easier to validate, store, and reuse. Each fact becomes a standalone, verifiable unit.
+**Why It Matters**: User queries often contain multiple claims mixed with conversational elements. This prompt isolates actionable agricultural knowledge, making it easier to validate, store, and reuse. Each fact becomes a standalone, verifiable unit.
 
 **Expected Input**:
 ```python
 {
-    "chatbot_response": "Hello! For aphid control, apply neem oil at 3ml per liter. Spray in early morning. Repeat every 7 days. Hope this helps!",
     "user_query": "How to control aphids organically?",
     "regional_context": "Bihar-specific practices",
     "additional_params": "Extract only organic pest control methods"
@@ -179,7 +178,7 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 }
 ```
 
-**When to Use**: Immediately after receiving chatbot responses, before any downstream processing.
+**When to Use**: Immediately after receiving user query, before any downstream processing.
 
 ---
 
@@ -348,8 +347,6 @@ When building AI-powered agricultural chatbots, ensuring response quality is cri
 ```
 
 **When to Use**: At the end of the evaluation pipeline, to assess facts that didn't match ground truth but might still be valuable.
-
-Here is the `fact_stitching` section formatted exactly like the other use cases in the documentation (matching `relevance_evaluation`, `contradiction_detection`, etc.).
 
 #### 6. **Fact Stitching** (`fact_stitching`)
 
@@ -545,6 +542,12 @@ flake8 farmerchat_prompts/
 
 ## Package Statistics
 
+|**Domain**|**Use Cases**|**OpenAI**|**Llama**|**Gemma**|
+|---|---|---|---|---|
+|**Crop Advisory**|5|✅|✅|✅|
+|**Prompt Evals**|7|✅|✅|✅|
+
+
 - **Total Prompts**: 36 (15 crop advisory + 21 prompt evals across Providers)
 - **Providers**: 3 (OpenAI, Llama, Gemma)
 - **Domains**: 2 (crop_advisory, prompt_evals)
@@ -561,7 +564,7 @@ farmerchat_prompts/
 └── prompts/
     ├── crop_advisory/  # Agricultural guidance prompts
     │   ├── openai.py   # 5 prompts
-    │   ├── gemma.py   # 5 prompts
+    │   ├── gemma.py    # 5 prompts
     │   └── llama.py    # 5 prompts
     └── prompt_evals/   # Evaluation & extraction prompts
         ├── openai.py   # 7 prompts
