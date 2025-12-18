@@ -22,7 +22,7 @@ pip install farmerchat-prompts
 Or install from GitHub:
 
 ```bash
-pip install git+https://github.com/aakashdg/farmerchat-prompts.git
+pip install git+https://github.com/digitalgreenorg/farmerchat-prompts.git
 ```
 
 ## Quick Start
@@ -525,7 +525,7 @@ Each provider has specific optimizations:
 ### Setup
 
 ```bash
-git clone https://github.com/aakashdg/farmerchat-prompts
+git clone https://github.com/digitalgreenorg/farmerchat-prompts
 cd farmerchat-prompts
 pip install -e ".[dev]"
 ```
@@ -618,7 +618,7 @@ If you use this package in your research or production system, please cite:
   author = {aakash@digitalgreen.org},
   title = {FarmerChat Prompts: Multi-Domain AI Prompt Management for Agriculture},
   year = {2024},
-  url = {https://github.com/aakashdg/farmerchat-prompts}
+  url = {https://github.com/digitalgreenorg/farmerchat-prompts}
 }
 ```
 
