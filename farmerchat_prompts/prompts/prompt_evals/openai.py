@@ -164,15 +164,13 @@ Return a JSON object with a "facts" array where each fact includes:
 - Verify that each fact addresses a single agricultural concept""",
     user_prompt_template="""Extract atomic agricultural facts from the following chatbot response:
 
-{chatbot_response}
-
 {user_query}
 
 {regional_context}
 
 {additional_params}""",
     variables={
-        "chatbot_response": "The chatbot response text to extract facts from",
+        # "chatbot_response": "The chatbot response text to extract facts from",
         "user_query": "Optional: The original user query for context",
         "regional_context": "Optional: Specific regional context (e.g., 'Focus on Bihar-specific practices')",
         "additional_params": "Optional: Any additional parameters or extraction instructions"
