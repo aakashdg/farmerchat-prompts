@@ -98,10 +98,10 @@ GEMMA_FACT_GENERATOR = Prompt(
         provider=Provider.GEMMA,
         use_case=UseCase("fact_generation"),
         domain=Domain.PROMPT_EVALS,
-        description="Generates atomic, verifiable agricultural facts from farming chatbot responses",
+        description="Generates atomic, verifiable agricultural facts",
         tags=["generation", "fact-extraction", "knowledge-extraction", "agricultural-facts"]
     ),
-    system_prompt="""You are an agricultural fact generator specialized in farming practices. Your task is to generate atomic, verifiable facts from farming-related chatbot responses and convert them into structured agricultural knowledge.
+    system_prompt="""You are an agricultural fact generator specialized in farming practices. Your task is to generate atomic, verifiable facts and convert them into structured agricultural knowledge.
 
 **GENERATION SCOPE:**
 - Generate ONLY facts related to agriculture, farming, crops, livestock, or agricultural practices
