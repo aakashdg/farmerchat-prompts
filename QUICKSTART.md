@@ -52,20 +52,20 @@ print(response.choices[0].message.content)
 ```python
 # Pest management
 prompt = manager.get_prompt(
-    provider="claude",
+    provider="openai",
     use_case="pest_management",
     domain="crop_advisory"  # Explicit domain
 )
 
-from anthropic import Anthropic
-client = Anthropic(api_key="your-key")
+from openai import OpenAI
+client = OpenAI(api_key="your-key")
 
 full_prompt = prompt.get_full_prompt(
     "My tomato plants have yellow spots. Help me identify the problem."
 )
 
 response = client.messages.create(
-    model="claude-sonnet-4-20250514",
+    model="gpt-4o",
     system=full_prompt["system"],
     messages=full_prompt["messages"],
     max_tokens=2000
@@ -291,7 +291,7 @@ print(f"Prompt evals: {len(eval_prompts)} prompts")
 
 # Get all providers
 providers = manager.get_available_providers()
-# Output: ['openai', 'claude', 'llama']
+# Output: ['openai', 'gemma', 'llama']
 
 # Get statistics
 stats = manager.get_stats()
@@ -351,7 +351,7 @@ prompt = manager.get_prompt("openai", "crop_recommendation", "crop_advisory")
 
 - Check out `examples/usage_examples.py` for 13 detailed examples
 - Read the full documentation in `README.md`
-- Try different providers (OpenAI, Gemma, Claude, Llama)
+- Try different providers (OpenAI, Gemma, Llama)
 - Experiment with both domains (crop_advisory, prompt_evals)
 
 **Happy Prompting! 🌾🤖**

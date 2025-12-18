@@ -317,42 +317,6 @@ def example_fact_stitching():
 
 
 
-
-def example_with_claude():
-    """Example with Claude API"""
-    print("\n" + "=" * 60)
-    print("EXAMPLE 8: Using with Claude")
-    print("=" * 60)
-    
-    manager = PromptManager()
-    prompt = manager.get_prompt("claude", "pest_management", "crop_advisory")
-    
-    user_input = """My tomato plants have yellow spots on leaves. 
-    About 30% of plants are affected. 
-    Noticed 5 days ago in Bangalore."""
-    
-    full_prompt = prompt.get_full_prompt(user_input)
-    
-    print("Ready for Claude API call:")
-    print(f"Domain: {prompt.metadata.domain.value}")
-    print(f"System prompt length: {len(full_prompt['system'])} chars")
-    print(f"Number of messages: {len(full_prompt['messages'])}")
-    
-    # Example API call (commented out - requires API key)
-    """
-    from anthropic import Anthropic
-    
-    client = Anthropic(api_key="your-api-key")
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        system=full_prompt["system"],
-        messages=full_prompt["messages"],
-        max_tokens=2000
-    )
-    print(response.content[0].text)
-    """
-
-
 def example_exploring_domains():
     """Example of exploring available domains"""
     print("\n" + "=" * 60)
@@ -582,7 +546,6 @@ if __name__ == "__main__":
     example_fact_recall()
     example_contradiction_detection()
     example_relevance_evaluation()
-    example_with_claude()
     example_exploring_domains()
     example_complete_matrix()
     example_backward_compatibility()

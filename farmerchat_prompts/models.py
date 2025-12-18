@@ -11,7 +11,6 @@ from datetime import datetime
 class Provider(str, Enum):
     """Supported AI providers"""
     OPENAI = "openai"
-    CLAUDE = "claude"
     LLAMA = "llama"
     GEMMA = "gemma"
 
@@ -78,13 +77,7 @@ class Prompt(BaseModel):
                     {"role": "user", "content": user_input}
                 ]
             }
-        elif self.metadata.provider == Provider.CLAUDE:
-            return {
-                "system": self.system_prompt,
-                "messages": [
-                    {"role": "user", "content": user_input}
-                ]
-            }
+
         elif self.metadata.provider == Provider.LLAMA:
             return {
                 "prompt": f"[INST] <<SYS>>\n{self.system_prompt}\n<</SYS>>\n\n{user_input} [/INST]"
