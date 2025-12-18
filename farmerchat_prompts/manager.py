@@ -44,11 +44,11 @@ class PromptManager:
         except ImportError:
             pass
 
-        # try:
-        #     from .prompts.crop_advisory.gemma import GEMMA_PROMPTS as CROP_GEMMA
-        #     self._register_prompts(CROP_GEMMA)
-        # except ImportError:
-        #     pass
+        try:
+            from .prompts.crop_advisory.gemma import GEMMA_PROMPTS as CROP_GEMMA
+            self._register_prompts(CROP_GEMMA)
+        except ImportError:
+            pass
         
         # Load Prompt Evals prompts
         try:
