@@ -545,7 +545,7 @@ flake8 farmerchat_prompts/
 
 ## Package Statistics
 
-- **Total Prompts**: 31 (10 crop advisory + 21 prompt evals across Providers)
+- **Total Prompts**: 36 (15 crop advisory + 21 prompt evals across Providers)
 - **Providers**: 3 (OpenAI, Llama, Gemma)
 - **Domains**: 2 (crop_advisory, prompt_evals)
 - **Use Cases**: 12 (5 crop advisory + 7 prompt evals)
@@ -561,6 +561,7 @@ farmerchat_prompts/
 └── prompts/
     ├── crop_advisory/  # Agricultural guidance prompts
     │   ├── openai.py   # 5 prompts
+    │    ├── gemma.py   # 5 prompts
     │   └── llama.py    # 5 prompts
     └── prompt_evals/   # Evaluation & extraction prompts
         ├── openai.py   # 7 prompts
