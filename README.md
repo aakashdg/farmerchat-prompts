@@ -561,7 +561,7 @@ farmerchat_prompts/
 └── prompts/
     ├── crop_advisory/  # Agricultural guidance prompts
     │   ├── openai.py   # 5 prompts
-    │    ├── gemma.py   # 5 prompts
+    │   ├── gemma.py   # 5 prompts
     │   └── llama.py    # 5 prompts
     └── prompt_evals/   # Evaluation & extraction prompts
         ├── openai.py   # 7 prompts
